@@ -16,7 +16,37 @@ I thought Claude Cowork provided a strong and well-grounded answer, using the ac
 ## Strategy 2
 
 ### Prompt
-//
+You are a senior credit risk strategist evaluating the performance of a consumer lending portfolio. Your audience is a team of credit risk managers responsible for monitoring portfolio health, identifying emerging risks, and making lending decisions. Working from the “Wildcat” folder and using the available loan-level credit data, what are the most important metrics for measuring credit risk in the consumer loan portfolio?
+
+### Response
+I pulled the actual loan-level data from your Wildcat folder (2,340 loans, $160.1M) and built a prioritized memo rather than a generic list. It's saved to your Drafts folder as Wildcat_Credit_Risk_Metrics_Memo.docx and also delivered above.
+
+The headline finding from the data itself: 13.3% of balance is currently delinquent or in default. From there, the five metrics I'd actually put on a recurring dashboard, ranked by decision value, are:
+
+Nonperforming balance % (delinquent + default) as the overall pulse check
+Charge-off rate / expected loss, with the $14.3M delinquent bucket tracked as the loss pipeline
+Weighted-average FICO and % of originations below 620, since FICO is by far the strongest predictor of bad loans in this book (correlation -0.20 vs. essentially zero for DTI)
+Vintage bad-rate trend, since 2023-2025 originations are already running 17.6-18.4% bad rates versus 12.7-14.0% for 2018-2020, a real underwriting-drift signal
+Concentration by loan purpose, since Business loans are 52% of dollar exposure despite being only 14% of loan count (HHI ≈ 3,400, highly concentrated)
+
+The memo also flags two data gaps worth raising with the team: DTI isn't discriminating risk in this book (worth a sourcing/verification check) and 47 loans have no FICO on file. Full breakdowns and recommendations are in the document.
+
+### My thoughts
+The added context of a telling Claude that it was a senior credit risk strategist caused it to build an extremely detailed, comprehensive 11 page report. It used up a lot of tokens for a prompt that I thought did not require that much heavy lifting. Perhaps you must specify the format, and how you want the output to be released to avoid this. 
+
+## Strategy 3
+
+### Prompt
+Working from the “Wildcat” folder and using the available loan-level credit data, what are the most important metrics for measuring credit risk in the consumer loan portfolio? Provide your response using the following structure:
+1. Metric: [Name of metric]
+Why it matters: [Brief explanation of why it is important for credit risk]
+How to analyze it: [Brief explanation of how it could be evaluated using the available data]
+2. Metric: [Name of metric]
+Why it matters: [Brief explanation]
+How to analyze it: [Brief explanation]
+3. Metric: [Name of metric]
+Why it matters: [Brief explanation]
+How to analyze it: [Brief explanation]
 
 ### Response
 //
