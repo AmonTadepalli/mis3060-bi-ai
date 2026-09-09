@@ -3,14 +3,23 @@
 ## Strategy 1
 
 ### Prompt 
-What are the most important metrics for measuring credit risk in a consumer loan portfolio?
+Working from the "Wildcat" folder, What are the most important metrics for measuring credit risk in a consumer loan portfolio?
 
 ### Response (First 150 words)
-This is a knowledge question, so I'll just answer directly. Given the context (looks like it could tie into a Wildcat Capital project), here's the core picture:
-Portfolio-level delinquency and default metrics
-The backbone is the delinquency roll rate—the share of accounts moving from current to 30, 60, 90+ days past due each period. Charge-off rate (annualized net losses as a percentage of average receivables) and the related net charge-off vs. gross charge-off spread (which shows how much recovery activity is offsetting losses) round this out. Vintage analysis, tracking loss curves for loans originated in the same quarter or month, is what lets you separate a portfolio problem from an underwriting problem, since it isolates cohort performance from seasoning effects.
-Borrower-level risk scores
-FICO or VantageScore at origination and refreshed periodically show whether risk has drifted since underwriting. Debt-to-income ratio and loan-to-value ratio (for secured products) matter at both origination and on a rolling basis. 
+Looking at the loan-level file in 02_Data/raw, this maps cleanly onto a real credit risk framework. Here's what I'd prioritize, roughly in order of how directly each answers "how risky is this portfolio":
+Default and delinquency rates. The core metric. Your loan_status field already breaks loans into Current, Paid Off, Delinquent, and Default (currently 106 defaults and 248 delinquent out of 2,340 loans, about 4.5% and 10.6%). Track this both as count-based and dollar-weighted (defaults on larger loans hurt more than defaults on small ones).
+Weighted average credit score and DTI. Your credit_score (500-850 range) and debt_to_income_ratio fields are the standard underwriting risk proxies. Look at the portfolio average, but more importantly segment default rate by credit score band (e.g., <620, 620-680, 680-740, 740+) and DTI band. This tells you which borrower tiers are actually driving losses.
 
 ### My thoughts 
-Cowork recognized that this was a knowledge-based question, and because this was in the Wildcat Capital Project it had a baseline of what to refer to. Since my prompt did not specify any calculations, it did not refer to the excel sheet in the folder, but I do wish it did. Perhaps I should have specified that claude needed to refer to the excel file to answer this question, since I do find this response to be slightly generic.
+I thought Claude Cowork provided a strong and well-grounded answer, using the actual Wildcat loan data rather than giving a generic credit-risk response. It identified the most important metrics and supported them with specific portfolio figures and relevant analysis. It also appropriately recognized limitations in the dataset, particularly the lack of recovery and detailed payment-history data. Overall, the response was thorough and useful, although slightly more technical and detailed than necessary for the question.
+
+## Strategy 2
+
+### Prompt
+//
+
+### Response
+//
+
+### My thoughts
+//
