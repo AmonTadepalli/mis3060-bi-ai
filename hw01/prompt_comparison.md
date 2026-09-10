@@ -69,7 +69,7 @@ Overall, all three strategies produced useful credit-risk analysis, but they dif
 From Part 2, Prompt 1: "credit score is usually the strongest single predictor of 90+ day delinquency."
 
 ### The source you used and the URL
-Source: Federal Reserve Board, "Report to the Congress on Credit Scoring and Its Effects on the Availability and Affordability of Credit" (2007) — federalreserve.gov/boarddocs/rptcongress/creditscore/creditscore.pdf
+Source: Federal Reserve Board, "Report to the Congress on Credit Scoring and Its Effects on the Availability and Affordability of Credit" (2007) — https://www.federalreserve.gov/boarddocs/rptcongress/creditscore/creditscore.pdf
 
 ### What the source says
 The report confirms that "for all populations, the percentage of individuals experiencing a serious delinquency on one or more of their credit accounts consistently declines as credit scores increase," and this pattern holds across racial, age, and marital-status groups. It also defines "serious delinquency" using a 90-days-past-due threshold (footnote 14: "any account delinquent 90 days or more or that was involved in a repossession or charge-off"), matching the "90+ day" language in the claim. But the report explicitly does not test credit score against DTI or income as competing predictors, it says it lacks reliable income and wealth data to make that comparison, so it studies score's predictive power on its own, not ranked against other variables.
