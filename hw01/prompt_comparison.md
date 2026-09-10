@@ -59,3 +59,6 @@ Why it matters: Defaulted balance is $7.0M (4.4% of the book), and applying stan
 
 ### My thoughts
 Claude’s response follows the requested format very well and provides specific, data-driven metrics rather than generic credit-risk concepts. It is detailed and demonstrates strong analysis of the dataset, although some claims—particularly the assumed LGD range and “strongest predictor” statement—go beyond what the prompt’s format example itself required. Specifying the output made the response a lot better for the level of complexity required in my opinion.
+
+## Conclusion
+Overall, all three strategies produced useful credit-risk analysis, but they differed significantly in depth and efficiency. Strategy 1 provided a strong, concise analysis but left some of the output structure and prioritization open-ended, while Strategy 2’s added role and audience produced the most comprehensive analysis but was arguably excessive for a BI analyst’s needs. Strategy 3 produced the most useful output for a BI analyst because the defined structure kept the response focused, organized, and directly connected each metric to why it matters and how it could be analyzed. Therefore, specifying the desired output format was more effective than simply adding a role and audience.
