@@ -25,6 +25,7 @@ from bs4 import BeautifulSoup
 # ---------------------------------------------------------------------------
 
 # SEC requires a descriptive User-Agent with a contact email on every request.
+# Replace the placeholder with your Villanova email before running.
 HEADERS = {"User-Agent": "MIS3060 Villanova atadepal@villanova.edu"}
 
 # Pause between requests to stay well under SEC's 10 requests/second limit.
