@@ -74,7 +74,7 @@ def quarantine(table, df, mask, reason, decision, extra=None):
 
 def oversold_sells(x):
     """Sells whose running Buy-minus-Sell position per client-security goes negative."""
-    tr = x[x.txn_type.isin(["Buy", "Sell"])].assign(q=num(x.shares).abs()).sort_values(["txn_date", "txn_id"])
+    tr = x[x.txn_type.isin(["Buy", "Sell"])].assign(q=num(x.shares).abs(), _n=num(x.txn_id)).sort_values(["txn_date", "_n"])
     pos = (tr.q * np.where(tr.txn_type == "Buy", 1, -1)).groupby([tr.client_id, tr.security_id]).cumsum()
     return int(((tr.txn_type == "Sell") & (pos < -1e-6)).sum())
 

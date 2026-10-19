@@ -39,6 +39,10 @@ def check_referential_integrity(fact_df, fact_key, dim_df, dim_key):
     """
     Check that every non-null foreign key in fact_df[fact_key] exists in dim_df[dim_key].
 
+    Keys are compared as text, so read both tables with dtype=str: a float key
+    (45.0) will not match an integer key (45), which is exactly the defect
+    this function must expose rather than hide.
+
     Blank strings and NaN both count as null keys. Null keys are reported
     separately and excluded from the match rate, because a null key (e.g. no
     security on a deposit) is a modelling question, not an orphan.
@@ -293,7 +297,7 @@ def score_table(t, df, T):
         "pct_key_uniqueness": round(uniqueness * 100, 3),
         "pct_type_validity": round(validity * 100, 3),
         "pct_rule_pass": round(passing.mean() * 100, 3),
-        "pct_referential_match": round(ref * 100, 3) if fks else "n/a (no foreign keys)",
+        "pct_referential_match": round(ref * 100, 3) if fks else np.nan,
     }, rules
 
 

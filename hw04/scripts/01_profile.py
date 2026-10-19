@@ -309,7 +309,7 @@ def single_table_checks(T):
     add("fact_transactions", "amount", "2 single-table", "amount = |shares| x price", "ERROR", recon_abs.sum(), len(x),
         detail="if this passes while the signed check fails, the sign of shares is the defect, not the amount")
     # running position per client-security: can a Sell exceed what was bought before it?
-    tr = x[x.txn_type.isin(["Buy", "Sell"])].assign(q=sh.abs()).sort_values(["txn_date", "txn_id"])
+    tr = x[x.txn_type.isin(["Buy", "Sell"])].assign(q=sh.abs(), _n=to_num(x.txn_id)).sort_values(["txn_date", "_n"])
     tr["pos"] = (tr.q * np.where(tr.txn_type == "Buy", 1, -1)).groupby([tr.client_id, tr.security_id]).cumsum()
     oversell = (tr.txn_type == "Sell") & (tr.pos < -1e-6)
     add("fact_transactions", "shares", "2 single-table", "Sell exceeds position built from earlier Buys", "INFO",
@@ -331,8 +331,10 @@ def ri_checks(T):
             f"{vals[orphan].nunique()} distinct orphan keys; {(~nonblank).sum()} blank keys")
         if orphan.any() and fk.endswith("_id"):
             # does the join work once the key is normalised to an integer?
-            norm = to_num(vals).dropna().astype("int64").astype(str)
-            still = (~norm.isin(set(d[dk]))).sum()
+            # only N or N.0 can be normalised; anything else (e.g. 45.5) stays an orphan
+            integral = vals.str.match(r"^\d+(\.0)?$")
+            norm = vals[integral].str.replace(r"\.0$", "", regex=True)
+            still = (~norm.isin(set(d[dk]))).sum() + (nonblank & ~integral).sum()
             add(ft, fk, "3 referential", f"{fk} -> {dt_}.{dk} (after numeric normalisation)", "ERROR",
                 still, len(f), "; ".join(norm[~norm.isin(set(d[dk]))].value_counts().head(4).index),
                 "orphans remaining after 45.0 -> 45; the rest of the gap is a format problem")

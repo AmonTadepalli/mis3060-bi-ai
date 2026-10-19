@@ -40,6 +40,10 @@ python hw04/scripts/03_validate.py    # writes the scorecard and the other Part 
 ## Claude Code review findings
 | Script | What Claude Code flagged | What I did |
 |---|---|---|
-| 01_profile.py | | |
-| 02_clean.py | | |
-| 03_validate.py | | |
+| 01_profile.py | Running-position check sorted same-day trades by txn_id as text, so "10" came before "9" | Fixed: sort on numeric txn_id. Re-ran; count unchanged (43,010) |
+| 01_profile.py | RI "after normalisation" cast keys to int64, which would silently turn a bad key like 45.5 into 45 | Fixed: only exact `N` or `N.0` keys are normalised; anything else stays an orphan |
+| 01_profile.py | Benchmark-to-risk mapping (Aggressive -> 1, Balanced -> 3, Conservative -> 8) is inferred from the data, not from a documented source | Kept: it passes on 100% of rows with a profile; noted here as an assumption |
+| 02_clean.py | Same text sort in `oversold_sells()` | Fixed with numeric sort. Re-ran; D16 count unchanged (42,975) |
+| 02_clean.py | State-name map is hard-coded to the 7 names seen in the audit | Kept on purpose: an `assert` stops the script if a new unmapped name appears, rather than guessing |
+| 03_validate.py | Scorecard mixed text ("n/a") into a numeric column, which would make a BI tool read it as text | Fixed: tables with no foreign keys now show a blank referential match |
+| 03_validate.py | `check_referential_integrity()` compares keys as text, so it gives false orphans if Assignment 5 reads files with default types | Kept (that strictness is what caught the 45.0 defect) and documented in the docstring: read both tables with `dtype=str` |
