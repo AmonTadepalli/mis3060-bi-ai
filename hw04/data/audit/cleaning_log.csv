@@ -1,0 +1,22 @@
+step,decision_id,table,issue,action,rows_affected,note
+C01,D02,dim_client,state spelled out,standardize,78,7 full names mapped to USPS codes; per-state totals = code count + name count
+C02,D01,dim_client,near-duplicate clients,quarantine,25,all 25 differ from a kept client by one trailing letter of last_name; none referenced by any fact
+C03,D09,fact_transactions,security_id as decimal text,convert,197175,dropped trailing .0; join to dim_security goes from 0% to 100%
+C04,D10,fact_transactions,orphan client_id,quarantine,200,"200 rows / 200 distinct ids; quarantined amount $10,888,495.37"
+C05,D11,fact_transactions,negative shares on Buy,convert,835,sign removed; amount = shares x price now holds on 100% of Buy/Sell/Dividend rows
+C06,D13,fact_transactions,trade on non-trading day,flag,40630,non_trading_day_flag = 1; date not changed (true trade date unknown)
+C07,D14,fact_transactions,txn after last snapshot,flag,2410,after_last_snapshot_flag = 1; all flagged rows belong to inactive clients
+C08,D17,fact_portfolio_snapshot,return_ytd as percent text,convert,300,stripped % and divided by 100; every value within 0.000050 of alpha + benchmark
+C09,D19,fact_portfolio_snapshot,"aum at 1,000.00 floor",flag,420,aum_floor_flag = 1; value kept (true balance unknown)
+--,D03,dim_client,blank risk_profile,leave as is,75,not inferred from benchmark 3 (looks like a default)
+--,D04,dim_client,zip_code leading zeros,leave as is,228,kept as text
+--,D05,dim_advisor,certifications = 'None',leave as is,6,real value: no certification
+--,D06,dim_security,blank sector (ETFs) / expense ratio (stocks),leave as is,500,"structural, split exactly by is_etf"
+--,D07,dim_security,duplicate security names,leave as is,6,different tickers; ticker is the identifier
+--,D08,dim_date,is_trading_day ignores market holidays (weekday Christmases shown),leave as is,3,simplified calendar; limitation
+--,D12,fact_transactions,blank security/shares/price on cash txns,leave as is,101528,structural
+--,D15,fact_transactions,Advisory Fee txns do not match fact_fees,leave as is,35742,use fact_fees for fee revenue
+--,D16,fact_transactions,Sells exceed position from earlier Buys,leave as is,42975,no opening holdings in extract; positions cannot be rebuilt
+--,D18,fact_portfolio_snapshot,scientific notation in returns,leave as is,891,valid numbers
+--,D20,fact_portfolio_snapshot,|return_ytd| > 100%,leave as is,977,internally consistent; IQR flag in Part D
+--,D21,fact_portfolio_snapshot,snapshot month with no fee row,leave as is,7350,no evidence of missing fees
