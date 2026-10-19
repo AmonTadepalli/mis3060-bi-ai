@@ -1,0 +1,212 @@
+table,column,check_group,check,severity,rows_affected,pct_of_rows,example,detail
+dim_client,state,1 column,allowed values,ERROR,78,3.089,Pennsylvania; Florida; New York; New Jersey; California,value outside the allowed code list
+fact_portfolio_snapshot,return_ytd,1 column,type validity (float),ERROR,300,0.232,9.28%; 19.52%; 13.35%; 4.04%,value does not parse as the expected type
+fact_transactions,security_id,1 column,type validity (int),ERROR,197175,65.995,45.0; 174.0; 478.0; 406.0,value does not parse as the expected type
+fact_transactions,shares,1 column,"range [0, ]",ERROR,836,0.28,-261.9719; -338.0946; -360.8407; -237.4548,
+dim_client,client_id,2 single-table,"near-duplicate clients (all fields equal except id, last_name)",ERROR,25,0.99,2240/2504: Collins/Collin; 2166/2514: Armstrong/Armstron; 1703/2511: Lopez/Lope,50 rows form 25 pairs
+fact_transactions,shares,2 single-table,shares negative on security txn,ERROR,836,0.28,"txn_id=272, txn_type=Buy, shares=-261.9719, price=441.71, amount=115715.61 | txn_id=812, txn_type=Buy, shares=-338.0946, price=397.85, amount=134510.94",by type: {'Buy': 836}
+fact_transactions,amount,2 single-table,amount = shares x price,ERROR,836,0.28,"txn_id=272, shares=-261.9719, price=441.71, amount=115715.61 | txn_id=812, shares=-338.0946, price=397.85, amount=134510.94",
+fact_transactions,client_id,3 referential,client_id -> dim_client.client_id (exact text match),ERROR,200,0.067,3191; 3017; 3058; 2974,200 distinct orphan keys; 0 blank keys
+fact_transactions,client_id,3 referential,client_id -> dim_client.client_id (after numeric normalisation),ERROR,200,0.067,3191; 3017; 3058; 2974,orphans remaining after 45.0 -> 45; the rest of the gap is a format problem
+fact_transactions,security_id,3 referential,security_id -> dim_security.security_id (exact text match),ERROR,197175,65.995,447.0; 430.0; 74.0; 128.0,500 distinct orphan keys; 101597 blank keys
+dim_client,risk_profile,1 column,blank values,WARN,76,3.01,,column is not expected to be blank
+fact_portfolio_snapshot,return_ytd,1 column,mixed formats in one column,WARN,435,0.336,9.9 (99.7%); 9.9% (0.2%); 9.9A-9 (0.1%),
+fact_portfolio_snapshot,active_alpha_ytd,1 column,mixed formats in one column,WARN,756,0.584,9.9 (99.4%); 9.9A-9 (0.5%); 9A-9 (0.1%),
+fact_portfolio_snapshot,aum,2 single-table,"aum sits exactly at 1,000.00 (floor value)",WARN,420,0.324,"client_id=29, snapshot_date=2021-02-01, aum=1000.0, return_ytd=-0.97695 | client_id=29, snapshot_date=2021-03-01, aum=1000.0, return_ytd=-0.97695","same value repeated month after month with ~-96% returns: looks like a system floor, not a real balance"
+fact_portfolio_snapshot,return_ytd,2 single-table,|return_ytd| > 100% (numeric rows),WARN,976,0.753,"client_id=29, snapshot_date=2022-07-01, return_ytd=2.872312 | client_id=29, snapshot_date=2022-08-01, return_ytd=2.946391",plausibility: extreme but alpha reconciles and series are continuous month to month
+fact_portfolio_snapshot,aum,4 cross-table,first snapshot aum within 50% of initial_aum,WARN,4,0.16,,
+fact_transactions,txn_date,4 cross-table,txn after the client's last snapshot month,WARN,2410,0.807,"txn_id=1278, client_id=13, txn_date=2023-09-08, txn_type=Deposit | txn_id=1282, client_id=13, txn_date=2023-04-12, txn_type=Dividend",is_active of those clients: {'False': 2410}
+fact_transactions,txn_date,4 cross-table,Buy/Sell on a non-trading day (dim_date),WARN,40649,13.605,"txn_id=26, txn_type=Buy, txn_date=2020-10-25 | txn_id=43, txn_type=Sell, txn_date=2022-01-02",
+fact_transactions,amount,4 cross-table,Advisory Fee debits = fact_fees charges (same client-month),WARN,28746,100.0,,median ratio txn/fee = 3.11; rows compared = client-months in both
+dim_advisor,certifications,1 column,null-like words (None/NULL/N/A),INFO,6,24.0,,pd.read_csv defaults would turn these into NaN: check whether the word is a real value
+dim_security,sector,1 column,blank values,INFO,219,43.8,,nullable by design: confirm with a rule
+dim_security,expense_ratio_bps,1 column,blank values,INFO,281,56.2,,nullable by design: confirm with a rule
+fact_transactions,security_id,1 column,blank values,INFO,101597,34.005,,nullable by design: confirm with a rule
+fact_transactions,shares,1 column,blank values,INFO,101597,34.005,,nullable by design: confirm with a rule
+fact_transactions,price,1 column,blank values,INFO,101597,34.005,,nullable by design: confirm with a rule
+dim_date,is_trading_day,2 single-table,INFO: trading day = weekday (market holidays not excluded),INFO,3,0.164,,e.g. Christmas on a weekday is marked as a trading day
+dim_security,sector,2 single-table,INFO: blank sector is structural (ETF),INFO,219,43.8,,"legitimate structure, not a defect"
+dim_security,name,2 single-table,"same name, different ticker",INFO,6,1.2,"security_id=38, ticker=OLAB, name=Jones Inc Fund, asset_class=Alternative | security_id=62, ticker=YXPS, name=Jones Inc Fund, asset_class=Fixed Income",different tickers / asset classes: likely distinct funds
+fact_portfolio_snapshot,return_ytd,2 single-table,percent-text values: does value/100 equal alpha + benchmark?,INFO,300,0.232,"snapshot_id=42, return_ytd=9.28%, benchmark_return_ytd=0.08279, active_alpha_ytd=0.009966 | snapshot_id=59, return_ytd=19.52%, benchmark_return_ytd=0.184957, active_alpha_ytd=0.010246",300 of 300 percent values reconcile after /100
+fact_transactions,security_id/shares/price,2 single-table,INFO: blanks on cash txns are structural,INFO,101597,34.005,,"Deposit / Withdrawal / Advisory Fee have no security: legitimate, do not fill"
+fact_transactions,shares,2 single-table,Sell exceeds position built from earlier Buys,INFO,43010,14.396,,"43010 of 59755 sells; extract has no opening holdings, so positions cannot be reconstructed"
+dim_client,client_id,4 cross-table,client has no rows in fact_fees,INFO,25,0.99,2501; 2502; 2503; 2504; 2505,
+dim_client,client_id,4 cross-table,client has no rows in fact_portfolio_snapshot,INFO,25,0.99,2501; 2502; 2503; 2504; 2505,
+dim_client,client_id,4 cross-table,client has no rows in fact_transactions,INFO,25,0.99,2501; 2502; 2503; 2504; 2505,
+fact_portfolio_snapshot,snapshot_date,4 cross-table,snapshot month has no fee row,INFO,7350,5.674,,fee not billed that month (waiver / timing); not a defect by itself
+fact_portfolio_snapshot,benchmark_id,4 cross-table,snapshots of clients with blank risk_profile: benchmark assigned,INFO,3942,3.043,benchmark_id values: {'3': 3942},"blank-risk clients all sit on benchmark 3: looks like a default, not evidence they are Balanced"
+dim_advisor,advisor_id,1 column,type validity (int),PASS,0,0.0,,value does not parse as the expected type
+dim_advisor,advisor_id,1 column,"range [1, ]",PASS,0,0.0,,
+dim_advisor,region,1 column,allowed values,PASS,0,0.0,,value outside the allowed code list
+dim_advisor,years_experience,1 column,type validity (int),PASS,0,0.0,,value does not parse as the expected type
+dim_advisor,years_experience,1 column,"range [0, 50]",PASS,0,0.0,,
+dim_advisor,aum_target_mm,1 column,type validity (int),PASS,0,0.0,,value does not parse as the expected type
+dim_advisor,aum_target_mm,1 column,"range [1, ]",PASS,0,0.0,,
+dim_advisor,certifications,1 column,allowed values,PASS,0,0.0,,value outside the allowed code list
+dim_advisor,advisor_id,1 column,primary key unique,PASS,0,0.0,,
+dim_advisor,advisor_id,1 column,primary key not blank,PASS,0,0.0,,
+dim_benchmark,benchmark_id,1 column,type validity (int),PASS,0,0.0,,value does not parse as the expected type
+dim_benchmark,benchmark_id,1 column,"range [1, ]",PASS,0,0.0,,
+dim_benchmark,benchmark_id,1 column,primary key unique,PASS,0,0.0,,
+dim_benchmark,benchmark_id,1 column,primary key not blank,PASS,0,0.0,,
+dim_client,client_id,1 column,type validity (int),PASS,0,0.0,,value does not parse as the expected type
+dim_client,client_id,1 column,"range [1, ]",PASS,0,0.0,,
+dim_client,age,1 column,type validity (int),PASS,0,0.0,,value does not parse as the expected type
+dim_client,age,1 column,"range [18, 110]",PASS,0,0.0,,
+dim_client,zip_code,1 column,pattern,PASS,0,0.0,,
+dim_client,risk_profile,1 column,allowed values,PASS,0,0.0,,value outside the allowed code list
+dim_client,client_tier,1 column,allowed values,PASS,0,0.0,,value outside the allowed code list
+dim_client,primary_account_type,1 column,allowed values,PASS,0,0.0,,value outside the allowed code list
+dim_client,initial_aum,1 column,type validity (float),PASS,0,0.0,,value does not parse as the expected type
+dim_client,initial_aum,1 column,"range [0.01, ]",PASS,0,0.0,,
+dim_client,client_since,1 column,type validity (date),PASS,0,0.0,,value does not parse as the expected type
+dim_client,client_since,1 column,"range [2000-01-01, 2024-12-31]",PASS,0,0.0,,
+dim_client,advisor_id,1 column,type validity (int),PASS,0,0.0,,value does not parse as the expected type
+dim_client,advisor_id,1 column,"range [1, ]",PASS,0,0.0,,
+dim_client,is_active,1 column,type validity (bool),PASS,0,0.0,,value does not parse as the expected type
+dim_client,client_id,1 column,primary key unique,PASS,0,0.0,,
+dim_client,client_id,1 column,primary key not blank,PASS,0,0.0,,
+dim_date,date_id,1 column,type validity (int),PASS,0,0.0,,value does not parse as the expected type
+dim_date,date_id,1 column,"range [1, ]",PASS,0,0.0,,
+dim_date,date,1 column,type validity (date),PASS,0,0.0,,value does not parse as the expected type
+dim_date,date,1 column,"range [2020-01-01, 2024-12-31]",PASS,0,0.0,,
+dim_date,year,1 column,type validity (int),PASS,0,0.0,,value does not parse as the expected type
+dim_date,year,1 column,"range [2020, 2024]",PASS,0,0.0,,
+dim_date,quarter,1 column,type validity (int),PASS,0,0.0,,value does not parse as the expected type
+dim_date,quarter,1 column,"range [1, 4]",PASS,0,0.0,,
+dim_date,month,1 column,type validity (int),PASS,0,0.0,,value does not parse as the expected type
+dim_date,month,1 column,"range [1, 12]",PASS,0,0.0,,
+dim_date,month_name,1 column,allowed values,PASS,0,0.0,,value outside the allowed code list
+dim_date,week_of_year,1 column,type validity (int),PASS,0,0.0,,value does not parse as the expected type
+dim_date,week_of_year,1 column,"range [1, 53]",PASS,0,0.0,,
+dim_date,day_of_week,1 column,allowed values,PASS,0,0.0,,value outside the allowed code list
+dim_date,is_month_end,1 column,type validity (flag01),PASS,0,0.0,,value does not parse as the expected type
+dim_date,is_quarter_end,1 column,type validity (flag01),PASS,0,0.0,,value does not parse as the expected type
+dim_date,is_year_end,1 column,type validity (flag01),PASS,0,0.0,,value does not parse as the expected type
+dim_date,is_trading_day,1 column,type validity (flag01),PASS,0,0.0,,value does not parse as the expected type
+dim_date,date_id,1 column,primary key unique,PASS,0,0.0,,
+dim_date,date_id,1 column,primary key not blank,PASS,0,0.0,,
+dim_date,date,1 column,natural key unique,PASS,0,0.0,,
+dim_security,security_id,1 column,type validity (int),PASS,0,0.0,,value does not parse as the expected type
+dim_security,security_id,1 column,"range [1, ]",PASS,0,0.0,,
+dim_security,ticker,1 column,pattern,PASS,0,0.0,,
+dim_security,asset_class,1 column,allowed values,PASS,0,0.0,,value outside the allowed code list
+dim_security,benchmark_id,1 column,type validity (int),PASS,0,0.0,,value does not parse as the expected type
+dim_security,benchmark_id,1 column,"range [1, ]",PASS,0,0.0,,
+dim_security,is_etf,1 column,type validity (bool),PASS,0,0.0,,value does not parse as the expected type
+dim_security,expense_ratio_bps,1 column,type validity (float),PASS,0,0.0,,value does not parse as the expected type
+dim_security,expense_ratio_bps,1 column,"range [0, 300]",PASS,0,0.0,,
+dim_security,security_id,1 column,primary key unique,PASS,0,0.0,,
+dim_security,security_id,1 column,primary key not blank,PASS,0,0.0,,
+dim_security,ticker,1 column,natural key unique,PASS,0,0.0,,
+fact_fees,fee_id,1 column,type validity (int),PASS,0,0.0,,value does not parse as the expected type
+fact_fees,fee_id,1 column,"range [1, ]",PASS,0,0.0,,
+fact_fees,client_id,1 column,type validity (int),PASS,0,0.0,,value does not parse as the expected type
+fact_fees,client_id,1 column,"range [1, ]",PASS,0,0.0,,
+fact_fees,advisor_id,1 column,type validity (int),PASS,0,0.0,,value does not parse as the expected type
+fact_fees,advisor_id,1 column,"range [1, ]",PASS,0,0.0,,
+fact_fees,fee_date,1 column,type validity (date),PASS,0,0.0,,value does not parse as the expected type
+fact_fees,fee_date,1 column,"range [2020-01-01, 2024-12-31]",PASS,0,0.0,,
+fact_fees,fee_type,1 column,allowed values,PASS,0,0.0,,value outside the allowed code list
+fact_fees,aum_basis,1 column,type validity (float),PASS,0,0.0,,value does not parse as the expected type
+fact_fees,aum_basis,1 column,"range [0.01, ]",PASS,0,0.0,,
+fact_fees,bps_charged,1 column,type validity (float),PASS,0,0.0,,value does not parse as the expected type
+fact_fees,bps_charged,1 column,"range [0, 300]",PASS,0,0.0,,
+fact_fees,amount,1 column,type validity (float),PASS,0,0.0,,value does not parse as the expected type
+fact_fees,amount,1 column,"range [0.01, ]",PASS,0,0.0,,
+fact_fees,fee_id,1 column,primary key unique,PASS,0,0.0,,
+fact_fees,fee_id,1 column,primary key not blank,PASS,0,0.0,,
+fact_portfolio_snapshot,snapshot_id,1 column,type validity (int),PASS,0,0.0,,value does not parse as the expected type
+fact_portfolio_snapshot,snapshot_id,1 column,"range [1, ]",PASS,0,0.0,,
+fact_portfolio_snapshot,client_id,1 column,type validity (int),PASS,0,0.0,,value does not parse as the expected type
+fact_portfolio_snapshot,client_id,1 column,"range [1, ]",PASS,0,0.0,,
+fact_portfolio_snapshot,advisor_id,1 column,type validity (int),PASS,0,0.0,,value does not parse as the expected type
+fact_portfolio_snapshot,advisor_id,1 column,"range [1, ]",PASS,0,0.0,,
+fact_portfolio_snapshot,benchmark_id,1 column,type validity (int),PASS,0,0.0,,value does not parse as the expected type
+fact_portfolio_snapshot,benchmark_id,1 column,"range [1, ]",PASS,0,0.0,,
+fact_portfolio_snapshot,snapshot_date,1 column,type validity (date),PASS,0,0.0,,value does not parse as the expected type
+fact_portfolio_snapshot,snapshot_date,1 column,"range [2020-01-01, 2024-12-31]",PASS,0,0.0,,
+fact_portfolio_snapshot,year,1 column,type validity (int),PASS,0,0.0,,value does not parse as the expected type
+fact_portfolio_snapshot,year,1 column,"range [2020, 2024]",PASS,0,0.0,,
+fact_portfolio_snapshot,month,1 column,type validity (int),PASS,0,0.0,,value does not parse as the expected type
+fact_portfolio_snapshot,month,1 column,"range [1, 12]",PASS,0,0.0,,
+fact_portfolio_snapshot,aum,1 column,type validity (float),PASS,0,0.0,,value does not parse as the expected type
+fact_portfolio_snapshot,aum,1 column,"range [0.01, ]",PASS,0,0.0,,
+fact_portfolio_snapshot,return_ytd,1 column,"range [-1.0, ]",PASS,0,0.0,,
+fact_portfolio_snapshot,benchmark_return_ytd,1 column,type validity (float),PASS,0,0.0,,value does not parse as the expected type
+fact_portfolio_snapshot,benchmark_return_ytd,1 column,"range [-1.0, ]",PASS,0,0.0,,
+fact_portfolio_snapshot,active_alpha_ytd,1 column,type validity (float),PASS,0,0.0,,value does not parse as the expected type
+fact_portfolio_snapshot,cash_pct,1 column,type validity (float),PASS,0,0.0,,value does not parse as the expected type
+fact_portfolio_snapshot,cash_pct,1 column,"range [0, 1]",PASS,0,0.0,,
+fact_portfolio_snapshot,account_type,1 column,allowed values,PASS,0,0.0,,value outside the allowed code list
+fact_portfolio_snapshot,snapshot_id,1 column,primary key unique,PASS,0,0.0,,
+fact_portfolio_snapshot,snapshot_id,1 column,primary key not blank,PASS,0,0.0,,
+fact_transactions,txn_id,1 column,type validity (int),PASS,0,0.0,,value does not parse as the expected type
+fact_transactions,txn_id,1 column,"range [1, ]",PASS,0,0.0,,
+fact_transactions,client_id,1 column,type validity (int),PASS,0,0.0,,value does not parse as the expected type
+fact_transactions,client_id,1 column,"range [1, ]",PASS,0,0.0,,
+fact_transactions,advisor_id,1 column,type validity (int),PASS,0,0.0,,value does not parse as the expected type
+fact_transactions,advisor_id,1 column,"range [1, ]",PASS,0,0.0,,
+fact_transactions,security_id,1 column,"range [1, ]",PASS,0,0.0,,
+fact_transactions,txn_date,1 column,type validity (date),PASS,0,0.0,,value does not parse as the expected type
+fact_transactions,txn_date,1 column,"range [2020-01-01, 2024-12-31]",PASS,0,0.0,,
+fact_transactions,txn_type,1 column,allowed values,PASS,0,0.0,,value outside the allowed code list
+fact_transactions,shares,1 column,type validity (float),PASS,0,0.0,,value does not parse as the expected type
+fact_transactions,price,1 column,type validity (float),PASS,0,0.0,,value does not parse as the expected type
+fact_transactions,price,1 column,"range [0.01, ]",PASS,0,0.0,,
+fact_transactions,amount,1 column,type validity (float),PASS,0,0.0,,value does not parse as the expected type
+fact_transactions,amount,1 column,"range [0.01, ]",PASS,0,0.0,,
+fact_transactions,txn_id,1 column,primary key unique,PASS,0,0.0,,
+fact_transactions,txn_id,1 column,primary key not blank,PASS,0,0.0,,
+dim_advisor,(all),2 single-table,exact duplicate rows (ignoring PK),PASS,0,0.0,,
+dim_benchmark,(all),2 single-table,exact duplicate rows (ignoring PK),PASS,0,0.0,,
+dim_client,(all),2 single-table,exact duplicate rows (ignoring PK),PASS,0,0.0,,
+dim_client,client_tier,2 single-table,tier matches initial_aum band (<500k / <5M / 5M+),PASS,0,0.0,,
+dim_date,(all),2 single-table,exact duplicate rows (ignoring PK),PASS,0,0.0,,
+dim_date,year,2 single-table,attribute agrees with date,PASS,0,0.0,,
+dim_date,quarter,2 single-table,attribute agrees with date,PASS,0,0.0,,
+dim_date,month,2 single-table,attribute agrees with date,PASS,0,0.0,,
+dim_date,month_name,2 single-table,attribute agrees with date,PASS,0,0.0,,
+dim_date,day_of_week,2 single-table,attribute agrees with date,PASS,0,0.0,,
+dim_date,week_of_year,2 single-table,attribute agrees with date,PASS,0,0.0,,
+dim_date,is_month_end,2 single-table,attribute agrees with date,PASS,0,0.0,,
+dim_date,is_quarter_end,2 single-table,attribute agrees with date,PASS,0,0.0,,
+dim_date,is_year_end,2 single-table,attribute agrees with date,PASS,0,0.0,,
+dim_date,is_trading_day,2 single-table,attribute agrees with date,PASS,0,0.0,,
+dim_date,date,2 single-table,calendar is contiguous (no missing days),PASS,0,0.0,,
+dim_security,(all),2 single-table,exact duplicate rows (ignoring PK),PASS,0,0.0,,
+dim_security,sector,2 single-table,sector blank only for ETFs,PASS,0,0.0,,
+dim_security,expense_ratio_bps,2 single-table,expense ratio present only for ETFs,PASS,0,0.0,,
+fact_fees,(all),2 single-table,exact duplicate rows (ignoring PK),PASS,0,0.0,,
+fact_fees,client_id+fee_date,2 single-table,one row per grain,PASS,0,0.0,,
+fact_fees,amount,2 single-table,"amount = aum_basis x bps / 10,000 / 12",PASS,0,0.0,,
+fact_portfolio_snapshot,(all),2 single-table,exact duplicate rows (ignoring PK),PASS,0,0.0,,
+fact_portfolio_snapshot,client_id+snapshot_date,2 single-table,one row per grain,PASS,0,0.0,,
+fact_portfolio_snapshot,active_alpha_ytd,2 single-table,alpha = return_ytd - benchmark_return_ytd (numeric rows),PASS,0,0.0,,
+fact_portfolio_snapshot,year,2 single-table,year agrees with snapshot_date,PASS,0,0.0,,
+fact_portfolio_snapshot,month,2 single-table,month agrees with snapshot_date,PASS,0,0.0,,
+fact_portfolio_snapshot,snapshot_date,2 single-table,snapshot dated on the 1st,PASS,0,0.0,,
+fact_transactions,(all),2 single-table,exact duplicate rows (ignoring PK),PASS,0,0.0,,
+fact_transactions,security_id/shares/price,2 single-table,cash txns have no security/shares/price,PASS,0,0.0,,
+fact_transactions,security_id/shares/price,2 single-table,security txns have security/shares/price,PASS,0,0.0,,
+fact_transactions,amount,2 single-table,amount = |shares| x price,PASS,0,0.0,,"if this passes while the signed check fails, the sign of shares is the defect, not the amount"
+dim_client,advisor_id,3 referential,advisor_id -> dim_advisor.advisor_id (exact text match),PASS,0,0.0,,0 distinct orphan keys; 0 blank keys
+dim_security,benchmark_id,3 referential,benchmark_id -> dim_benchmark.benchmark_id (exact text match),PASS,0,0.0,,0 distinct orphan keys; 0 blank keys
+fact_fees,client_id,3 referential,client_id -> dim_client.client_id (exact text match),PASS,0,0.0,,0 distinct orphan keys; 0 blank keys
+fact_fees,advisor_id,3 referential,advisor_id -> dim_advisor.advisor_id (exact text match),PASS,0,0.0,,0 distinct orphan keys; 0 blank keys
+fact_fees,fee_date,3 referential,fee_date -> dim_date.date (exact text match),PASS,0,0.0,,0 distinct orphan keys; 0 blank keys
+fact_portfolio_snapshot,client_id,3 referential,client_id -> dim_client.client_id (exact text match),PASS,0,0.0,,0 distinct orphan keys; 0 blank keys
+fact_portfolio_snapshot,advisor_id,3 referential,advisor_id -> dim_advisor.advisor_id (exact text match),PASS,0,0.0,,0 distinct orphan keys; 0 blank keys
+fact_portfolio_snapshot,benchmark_id,3 referential,benchmark_id -> dim_benchmark.benchmark_id (exact text match),PASS,0,0.0,,0 distinct orphan keys; 0 blank keys
+fact_portfolio_snapshot,snapshot_date,3 referential,snapshot_date -> dim_date.date (exact text match),PASS,0,0.0,,0 distinct orphan keys; 0 blank keys
+fact_transactions,advisor_id,3 referential,advisor_id -> dim_advisor.advisor_id (exact text match),PASS,0,0.0,,0 distinct orphan keys; 0 blank keys
+fact_transactions,security_id,3 referential,security_id -> dim_security.security_id (after numeric normalisation),PASS,0,0.0,,orphans remaining after 45.0 -> 45; the rest of the gap is a format problem
+fact_transactions,txn_date,3 referential,txn_date -> dim_date.date (exact text match),PASS,0,0.0,,0 distinct orphan keys; 0 blank keys
+fact_fees,advisor_id,4 cross-table,advisor matches the client's advisor in dim_client,PASS,0,0.0,,
+fact_fees,aum_basis,4 cross-table,fee has a snapshot for the same client-month,PASS,0,0.0,,
+fact_fees,aum_basis,4 cross-table,aum_basis = snapshot aum for that client-month,PASS,0,0.0,,
+fact_portfolio_snapshot,advisor_id,4 cross-table,advisor matches the client's advisor in dim_client,PASS,0,0.0,,
+fact_portfolio_snapshot,account_type,4 cross-table,account_type = client primary_account_type,PASS,0,0.0,,
+fact_portfolio_snapshot,benchmark_id,4 cross-table,benchmark consistent with client risk_profile,PASS,0,0.0,,
+fact_transactions,advisor_id,4 cross-table,advisor matches the client's advisor in dim_client,PASS,0,0.0,,
+fact_transactions,txn_date,4 cross-table,txn on/after client_since,PASS,0,0.0,,
