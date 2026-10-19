@@ -1,0 +1,17 @@
+stage,reconciliation,type,rows_compared,rows_agree,agree_pct,detail
+raw,txn amount = shares x price (Buy/Sell/Dividend),recomputed,197175,196339,99.576,
+raw,"fee amount = aum_basis x bps / 10,000 / 12",recomputed,122197,122197,100.0,
+raw,active_alpha_ytd = return_ytd - benchmark_return_ytd (tol 0.000002),recomputed,129547,129247,99.768,300 return values not numeric
+raw,active_alpha_ytd = return_ytd - benchmark_return_ytd (tol 0.00006),recomputed,129547,129247,99.768,tolerance covers values converted from 2-decimal percent text (D17)
+raw,fact_fees.aum_basis = fact_portfolio_snapshot.aum (client-month),cross-table,122197,122197,100.0,
+raw,fact advisor_id = dim_client.advisor_id (all 3 facts),cross-table,550516,550316,99.964,rows whose client is missing from dim_client count as disagreeing
+raw,snapshot account_type = dim_client.primary_account_type,cross-table,129547,129547,100.0,
+raw,Advisory Fee txns = fact_fees amount (client-month),cross-table,28746,0,0.0,"median txn/fee ratio 3.11; totals: Advisory Fee txns $263,780,236.09 vs fact_fees $204,675,583.12 (1.29x); known limitation D15"
+clean,txn amount = shares x price (Buy/Sell/Dividend),recomputed,197044,197044,100.0,
+clean,"fee amount = aum_basis x bps / 10,000 / 12",recomputed,122197,122197,100.0,
+clean,active_alpha_ytd = return_ytd - benchmark_return_ytd (tol 0.000002),recomputed,129547,129263,99.781,0 return values not numeric
+clean,active_alpha_ytd = return_ytd - benchmark_return_ytd (tol 0.00006),recomputed,129547,129547,100.0,tolerance covers values converted from 2-decimal percent text (D17)
+clean,fact_fees.aum_basis = fact_portfolio_snapshot.aum (client-month),cross-table,122197,122197,100.0,
+clean,fact advisor_id = dim_client.advisor_id (all 3 facts),cross-table,550316,550316,100.0,rows whose client is missing from dim_client count as disagreeing
+clean,snapshot account_type = dim_client.primary_account_type,cross-table,129547,129547,100.0,
+clean,Advisory Fee txns = fact_fees amount (client-month),cross-table,28746,0,0.0,"median txn/fee ratio 3.11; totals: Advisory Fee txns $263,709,737.13 vs fact_fees $204,675,583.12 (1.29x); known limitation D15"

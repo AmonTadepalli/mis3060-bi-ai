@@ -1,0 +1,9 @@
+stage,table,column,values,q1,q3,lower_fence,upper_fence,below,above,flagged,flagged_pct,max_value,flagged_client_tier_mix
+raw,fact_transactions,amount,298772,12078.93,81827.01,-92543.18999999997,186449.12999999998,0.0,7224.0,7224,2.418,249302.33,Retail 60.5%; HNW 28.9%; UHNW 10.6%
+raw,fact_portfolio_snapshot,aum,129547,255418.055,2923874.38,-3747266.4324999996,6926558.8675,0.0,13261.0,13261,10.236,82386642.91,UHNW 98.9%; HNW 1.1%
+raw,fact_portfolio_snapshot,return_ytd,129247,-0.034847,0.115175,-0.25988,0.34020799999999995,4802.0,5241.0,10043,7.77,94.668215,Retail 99.4%; HNW 0.6%
+raw,fact_portfolio_snapshot,"return_ytd (|value| > 1, D20)",129247,,,,,,,976,0.753,94.668215,Retail 100.0%
+clean,fact_transactions,amount,298572,12079.099999999999,81825.06,-92539.84,186444.0,0.0,7221.0,7221,2.419,249302.33,Retail 60.5%; HNW 28.9%; UHNW 10.6%
+clean,fact_portfolio_snapshot,aum,129547,255418.055,2923874.38,-3747266.4324999996,6926558.8675,0.0,13261.0,13261,10.236,82386642.91,UHNW 98.9%; HNW 1.1%
+clean,fact_portfolio_snapshot,return_ytd,129547,-0.034828,0.1151935,-0.25986025,0.34022575,4814.0,5253.0,10067,7.771,94.668215,Retail 99.4%; HNW 0.6%
+clean,fact_portfolio_snapshot,"return_ytd (|value| > 1, D20)",129547,,,,,,,977,0.754,94.668215,Retail 100.0%

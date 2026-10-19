@@ -1,0 +1,132 @@
+stage,table,rule,rows,fail_rows,pass_pct
+raw,dim_advisor,"advisor_id in range [1, ]",25,0,100.0
+raw,dim_advisor,region in allowed list,25,0,100.0
+raw,dim_advisor,"years_experience in range [0, 50]",25,0,100.0
+raw,dim_advisor,"aum_target_mm in range [1, ]",25,0,100.0
+raw,dim_advisor,certifications in allowed list,25,0,100.0
+raw,dim_benchmark,"benchmark_id in range [1, ]",8,0,100.0
+raw,dim_client,"client_id in range [1, ]",2525,0,100.0
+raw,dim_client,"age in range [18, 110]",2525,0,100.0
+raw,dim_client,state in allowed list,2525,78,96.911
+raw,dim_client,zip_code matches ^\d{5}$,2525,0,100.0
+raw,dim_client,risk_profile in allowed list,2525,0,100.0
+raw,dim_client,client_tier in allowed list,2525,0,100.0
+raw,dim_client,primary_account_type in allowed list,2525,0,100.0
+raw,dim_client,"initial_aum in range [0.01, ]",2525,0,100.0
+raw,dim_client,"client_since in range [2000-01-01, 2024-12-31]",2525,0,100.0
+raw,dim_client,"advisor_id in range [1, ]",2525,0,100.0
+raw,dim_client,client_tier matches initial_aum band,2525,0,100.0
+raw,dim_date,"date_id in range [1, ]",1827,0,100.0
+raw,dim_date,"date in range [2020-01-01, 2024-12-31]",1827,0,100.0
+raw,dim_date,"year in range [2020, 2024]",1827,0,100.0
+raw,dim_date,"quarter in range [1, 4]",1827,0,100.0
+raw,dim_date,"month in range [1, 12]",1827,0,100.0
+raw,dim_date,month_name in allowed list,1827,0,100.0
+raw,dim_date,"week_of_year in range [1, 53]",1827,0,100.0
+raw,dim_date,day_of_week in allowed list,1827,0,100.0
+raw,dim_security,"security_id in range [1, ]",500,0,100.0
+raw,dim_security,"ticker matches ^[A-Z]{1,5}$",500,0,100.0
+raw,dim_security,asset_class in allowed list,500,0,100.0
+raw,dim_security,"benchmark_id in range [1, ]",500,0,100.0
+raw,dim_security,"expense_ratio_bps in range [0, 300]",500,0,100.0
+raw,dim_security,"ETF: expense ratio, no sector; stock: sector, no expense ratio",500,0,100.0
+raw,fact_fees,"fee_id in range [1, ]",122197,0,100.0
+raw,fact_fees,"client_id in range [1, ]",122197,0,100.0
+raw,fact_fees,"advisor_id in range [1, ]",122197,0,100.0
+raw,fact_fees,"fee_date in range [2020-01-01, 2024-12-31]",122197,0,100.0
+raw,fact_fees,fee_type in allowed list,122197,0,100.0
+raw,fact_fees,"aum_basis in range [0.01, ]",122197,0,100.0
+raw,fact_fees,"bps_charged in range [0, 300]",122197,0,100.0
+raw,fact_fees,"amount in range [0.01, ]",122197,0,100.0
+raw,fact_fees,"amount = aum_basis x bps / 10,000 / 12",122197,0,100.0
+raw,fact_portfolio_snapshot,"snapshot_id in range [1, ]",129547,0,100.0
+raw,fact_portfolio_snapshot,"client_id in range [1, ]",129547,0,100.0
+raw,fact_portfolio_snapshot,"advisor_id in range [1, ]",129547,0,100.0
+raw,fact_portfolio_snapshot,"benchmark_id in range [1, ]",129547,0,100.0
+raw,fact_portfolio_snapshot,"snapshot_date in range [2020-01-01, 2024-12-31]",129547,0,100.0
+raw,fact_portfolio_snapshot,"year in range [2020, 2024]",129547,0,100.0
+raw,fact_portfolio_snapshot,"month in range [1, 12]",129547,0,100.0
+raw,fact_portfolio_snapshot,"aum in range [0.01, ]",129547,0,100.0
+raw,fact_portfolio_snapshot,"return_ytd in range [-1.0, ]",129547,300,99.768
+raw,fact_portfolio_snapshot,"benchmark_return_ytd in range [-1.0, ]",129547,0,100.0
+raw,fact_portfolio_snapshot,"cash_pct in range [0, 1]",129547,0,100.0
+raw,fact_portfolio_snapshot,account_type in allowed list,129547,0,100.0
+raw,fact_portfolio_snapshot,year/month agree with snapshot_date,129547,0,100.0
+raw,fact_transactions,"txn_id in range [1, ]",298772,0,100.0
+raw,fact_transactions,"client_id in range [1, ]",298772,0,100.0
+raw,fact_transactions,"advisor_id in range [1, ]",298772,0,100.0
+raw,fact_transactions,"security_id in range [1, ]",298772,0,100.0
+raw,fact_transactions,"txn_date in range [2020-01-01, 2024-12-31]",298772,0,100.0
+raw,fact_transactions,txn_type in allowed list,298772,0,100.0
+raw,fact_transactions,"shares in range [0, ]",298772,836,99.72
+raw,fact_transactions,"price in range [0.01, ]",298772,0,100.0
+raw,fact_transactions,"amount in range [0.01, ]",298772,0,100.0
+raw,fact_transactions,cash txn has no security; security txn has all three,298772,0,100.0
+raw,fact_transactions,sign rule: shares >= 0 and amount > 0,298772,836,99.72
+clean,dim_advisor,"advisor_id in range [1, ]",25,0,100.0
+clean,dim_advisor,region in allowed list,25,0,100.0
+clean,dim_advisor,"years_experience in range [0, 50]",25,0,100.0
+clean,dim_advisor,"aum_target_mm in range [1, ]",25,0,100.0
+clean,dim_advisor,certifications in allowed list,25,0,100.0
+clean,dim_benchmark,"benchmark_id in range [1, ]",8,0,100.0
+clean,dim_client,"client_id in range [1, ]",2500,0,100.0
+clean,dim_client,"age in range [18, 110]",2500,0,100.0
+clean,dim_client,state in allowed list,2500,0,100.0
+clean,dim_client,zip_code matches ^\d{5}$,2500,0,100.0
+clean,dim_client,risk_profile in allowed list,2500,0,100.0
+clean,dim_client,client_tier in allowed list,2500,0,100.0
+clean,dim_client,primary_account_type in allowed list,2500,0,100.0
+clean,dim_client,"initial_aum in range [0.01, ]",2500,0,100.0
+clean,dim_client,"client_since in range [2000-01-01, 2024-12-31]",2500,0,100.0
+clean,dim_client,"advisor_id in range [1, ]",2500,0,100.0
+clean,dim_client,client_tier matches initial_aum band,2500,0,100.0
+clean,dim_date,"date_id in range [1, ]",1827,0,100.0
+clean,dim_date,"date in range [2020-01-01, 2024-12-31]",1827,0,100.0
+clean,dim_date,"year in range [2020, 2024]",1827,0,100.0
+clean,dim_date,"quarter in range [1, 4]",1827,0,100.0
+clean,dim_date,"month in range [1, 12]",1827,0,100.0
+clean,dim_date,month_name in allowed list,1827,0,100.0
+clean,dim_date,"week_of_year in range [1, 53]",1827,0,100.0
+clean,dim_date,day_of_week in allowed list,1827,0,100.0
+clean,dim_security,"security_id in range [1, ]",500,0,100.0
+clean,dim_security,"ticker matches ^[A-Z]{1,5}$",500,0,100.0
+clean,dim_security,asset_class in allowed list,500,0,100.0
+clean,dim_security,"benchmark_id in range [1, ]",500,0,100.0
+clean,dim_security,"expense_ratio_bps in range [0, 300]",500,0,100.0
+clean,dim_security,"ETF: expense ratio, no sector; stock: sector, no expense ratio",500,0,100.0
+clean,fact_fees,"fee_id in range [1, ]",122197,0,100.0
+clean,fact_fees,"client_id in range [1, ]",122197,0,100.0
+clean,fact_fees,"advisor_id in range [1, ]",122197,0,100.0
+clean,fact_fees,"fee_date in range [2020-01-01, 2024-12-31]",122197,0,100.0
+clean,fact_fees,fee_type in allowed list,122197,0,100.0
+clean,fact_fees,"aum_basis in range [0.01, ]",122197,0,100.0
+clean,fact_fees,"bps_charged in range [0, 300]",122197,0,100.0
+clean,fact_fees,"amount in range [0.01, ]",122197,0,100.0
+clean,fact_fees,"amount = aum_basis x bps / 10,000 / 12",122197,0,100.0
+clean,fact_portfolio_snapshot,"snapshot_id in range [1, ]",129547,0,100.0
+clean,fact_portfolio_snapshot,"client_id in range [1, ]",129547,0,100.0
+clean,fact_portfolio_snapshot,"advisor_id in range [1, ]",129547,0,100.0
+clean,fact_portfolio_snapshot,"benchmark_id in range [1, ]",129547,0,100.0
+clean,fact_portfolio_snapshot,"snapshot_date in range [2020-01-01, 2024-12-31]",129547,0,100.0
+clean,fact_portfolio_snapshot,"year in range [2020, 2024]",129547,0,100.0
+clean,fact_portfolio_snapshot,"month in range [1, 12]",129547,0,100.0
+clean,fact_portfolio_snapshot,"aum in range [0.01, ]",129547,0,100.0
+clean,fact_portfolio_snapshot,"return_ytd in range [-1.0, ]",129547,0,100.0
+clean,fact_portfolio_snapshot,"benchmark_return_ytd in range [-1.0, ]",129547,0,100.0
+clean,fact_portfolio_snapshot,"cash_pct in range [0, 1]",129547,0,100.0
+clean,fact_portfolio_snapshot,account_type in allowed list,129547,0,100.0
+clean,fact_portfolio_snapshot,year/month agree with snapshot_date,129547,0,100.0
+clean,fact_portfolio_snapshot,aum_floor_flag is 0/1,129547,0,100.0
+clean,fact_transactions,"txn_id in range [1, ]",298572,0,100.0
+clean,fact_transactions,"client_id in range [1, ]",298572,0,100.0
+clean,fact_transactions,"advisor_id in range [1, ]",298572,0,100.0
+clean,fact_transactions,"security_id in range [1, ]",298572,0,100.0
+clean,fact_transactions,"txn_date in range [2020-01-01, 2024-12-31]",298572,0,100.0
+clean,fact_transactions,txn_type in allowed list,298572,0,100.0
+clean,fact_transactions,"shares in range [0, ]",298572,0,100.0
+clean,fact_transactions,"price in range [0.01, ]",298572,0,100.0
+clean,fact_transactions,"amount in range [0.01, ]",298572,0,100.0
+clean,fact_transactions,cash txn has no security; security txn has all three,298572,0,100.0
+clean,fact_transactions,sign rule: shares >= 0 and amount > 0,298572,0,100.0
+clean,fact_transactions,non_trading_day_flag is 0/1,298572,0,100.0
+clean,fact_transactions,after_last_snapshot_flag is 0/1,298572,0,100.0
