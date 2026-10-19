@@ -179,11 +179,11 @@ Dimensions: Validity, Completeness, Uniqueness, Consistency, Accuracy/Plausibili
 | Field | Entry |
 |---|---|
 | **Table / column** | fact_transactions / amount (txn_type = Advisory Fee) vs fact_fees / amount |
-| **Evidence** | 0 of 28,746 client-months that appear in both tables agree. Median ratio of transaction debits to fee charges is about 2.8x. |
+| **Evidence** | 0 of 28,746 client-months that appear in both tables agree. Median ratio of transaction debits to fee charges is 3.11x per client-month. |
 | **Dimension violated** | Consistency (cross-table) |
 | **Decision** | leave as is |
 | **Justification** | The two come from different systems and appear to measure different things (fee debits from cash vs billed charges). fact_fees reconciles exactly to aum_basis x bps / 12 and to snapshot AUM, so it is the trustworthy source for fee revenue. I can't say which transaction rows are wrong, so I change nothing and document that fee revenue should come from fact_fees. |
-| **Risk** | Anyone who sums Advisory Fee transactions as revenue will get a number about 2.8x too high. |
+| **Risk** | Anyone who sums Advisory Fee transactions as revenue will overstate fee revenue: $263.8M of Advisory Fee transactions vs $204.7M billed in fact_fees in the raw extract (1.29x in total). |
 
 ## D16: Sells larger than the position
 | Field | Entry |
