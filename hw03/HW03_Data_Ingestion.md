@@ -134,8 +134,6 @@ Use Claude Cowork to generate a third script, `hw03/hw03_timeline.py`, that join
 
 Run the script and review the output. In `hw03/analysis.md`, write a short paragraph (3–5 sentences) answering: based on your data, do the executive changes you found appear to precede or follow earnings announcements? Is there any pattern across the five companies, or does it vary?
 
-Most executive changes in my data came before earnings announcements: 22 of 30 events (11 of 16 filings) were filed ahead of the nearest earnings release, compared with 6 events after and 2 in the same week. The pattern is strongest for JPMorgan and Walmart, which had no events after earnings, while Microsoft was the exception, with two board changes filed after its April earnings. The biggest announcements also landed shortly before earnings: Apple's CEO transition came 10 days before its April release, and Walmart's CEO change was filed 6 days before its November release. One caveat is that multi-person filings inflate the event count, and with quarterly earnings no event can be more than about 45 days from one, so this is a lean worth noting rather than a proven pattern across five companies.
-
 If `executive_events.csv` has no rows (all five companies had zero Item 5.02 filings in the past 12 months), note this in `hw03/analysis.md` and explain what it might mean — this is a valid analytical finding.
 
 ---

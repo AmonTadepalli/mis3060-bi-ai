@@ -92,7 +92,7 @@ Each prompt was sent in a new Cowork conversation. Specifications A and B were p
 
 ### Prompt 4: yfinance cross-check for Part 5C (produced `hw03_yfinance_check.py`)
 
-Cowork generated this script based on the assignment's suggested prompt: *"Write Python using yfinance to get the most recent quarterly revenue and net income for [ticker]."* I used AAPL as the ticker and ran it myself to fill in the 5C table. 
+Cowork generated this script while helping me draft `validation.md`, based on the assignment's suggested prompt: *"Write Python using yfinance to get the most recent quarterly revenue and net income for [ticker]."* I used AAPL as the ticker and ran it myself to fill in the 5C table.
 
 ## Extractions That Required Iteration
 
