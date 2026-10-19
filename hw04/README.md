@@ -7,7 +7,7 @@ Audit, clean and validate the 8-table Wildcat Capital extract. Result: 555,401 r
 ```
 hw04/
 ├── HW04_Data_Cleaning.md      assignment brief
-├── decision_log.md            Part B: 21 issues, written before cleaning code
+├── decision_log.md            Part B: 22 issues, written before cleaning code
 ├── scripts/
 │   ├── wildcat_schema.py      shared rules: types, keys, allowed values, ranges, 13 relationships
 │   ├── 01_profile.py          Part A: generic profiler + 4 groups of checks

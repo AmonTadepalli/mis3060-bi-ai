@@ -79,6 +79,14 @@ def oversold_sells(x):
     return int(((tr.txn_type == "Sell") & (pos < -1e-6)).sum())
 
 
+def first_aum_gap(T):
+    """Clients whose first snapshot AUM is more than 50% away from initial_aum."""
+    p, c = T["fact_portfolio_snapshot"], T["dim_client"].set_index("client_id")
+    first = p.sort_values("snapshot_date").groupby("client_id").first()
+    ratio = num(first.aum) / num(first.index.to_series().map(c.initial_aum))
+    return int(((ratio < 0.5) | (ratio > 1.5)).sum())
+
+
 def fmt_decimal(x):
     """Write a decimal without scientific notation or trailing zeros (0.0928, -0.00005)."""
     s = f"{x:.6f}".rstrip("0").rstrip(".")
@@ -195,6 +203,7 @@ def main():
     trading = x.txn_date.map(T["dim_date"].set_index("date").is_trading_day)
     assert trading.notna().all(), "txn_date missing from dim_date"
     mask = x.txn_type.isin(["Buy", "Sell"]) & (trading == "0")
+    print(f"    before: no flag column; {mask.sum():,} Buy/Sell rows dated on a non-trading day")
     x["non_trading_day_flag"] = np.where(mask, "1", "0")
     print(f"    after:  flagged {mask.sum():,} of {x.txn_type.isin(['Buy', 'Sell']).sum():,} trades")
     assert (x.non_trading_day_flag == "1").sum() == mask.sum()
@@ -207,6 +216,7 @@ def main():
     last = T["fact_portfolio_snapshot"].groupby("client_id").snapshot_date.max().str[:7]
     mask = x.txn_date.str[:7] > x.client_id.map(last)
     active = x.client_id.map(T["dim_client"].set_index("client_id").is_active)
+    print(f"    before: no flag column; {mask.sum():,} rows dated after the client's last snapshot month")
     x["after_last_snapshot_flag"] = np.where(mask, "1", "0")
     print(f"    after:  flagged {mask.sum():,}; is_active of flagged clients {active[mask].value_counts().to_dict()}")
     assert (x.after_last_snapshot_flag == "1").sum() == mask.sum()
@@ -237,6 +247,7 @@ def main():
     # C09 / D19: AUM stuck at the 1,000.00 floor -> flag
     header("C09", "D19", "fact_portfolio_snapshot", "aum exactly 1,000.00 (system floor)")
     mask = num(p.aum) == 1000
+    print(f"    before: no flag column; {mask.sum()} snapshots with aum exactly 1,000.00")
     p["aum_floor_flag"] = np.where(mask, "1", "0")
     print(f"    after:  flagged {mask.sum()} snapshots across {p.client_id[mask].nunique()} clients")
     assert (p.aum_floor_flag == "1").sum() == mask.sum() and (num(p.aum[p.aum_floor_flag == "1"]) == 1000).all()
@@ -276,6 +287,8 @@ def main():
         ("D21", "fact_portfolio_snapshot", "snapshot month with no fee row",
          (~p.set_index(["client_id", "snapshot_date"]).index.isin(
              f.set_index(["client_id", "fee_date"]).index)).sum(), "no evidence of missing fees"),
+        ("D22", "fact_portfolio_snapshot", "first snapshot aum >50% away from initial_aum", first_aum_gap(T),
+         "onboarding figure vs later balance; no evidence which is wrong"),
     ]:
         print(f"  {d} {t}: {issue}")
         log_step("--", d, t, issue, "leave as is", rows, note)

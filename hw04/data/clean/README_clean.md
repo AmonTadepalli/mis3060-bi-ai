@@ -62,6 +62,7 @@ Return and percentage columns are fractions (0.0928 = 9.28%). Format as percent;
 | Sells exceed the position built from earlier Buys | 42,975 sells | No opening holdings in the extract. Use snapshots for positions. |
 | return_ytd above 100% | 977 snapshots | Internally consistent and continuous; can't prove wrong. Outliers marked in Part D. |
 | Snapshot months with no fee row | 7,350 | Could be waivers or quarterly billing; inventing fees would invent revenue. |
+| First snapshot AUM >50% away from initial_aum | 4 clients | Onboarding figure vs later balance; no evidence which is wrong. |
 | is_trading_day ignores market holidays | about 9 to 10 days a year | Fixing needs an outside holiday calendar. |
 | Converted percent returns keep 4 decimals | 300 | Original text had 2-decimal percents (gap to alpha + benchmark at most 0.00005). |
 | Orphan transactions removed | 200 ($10,888,495.37) | Client unknown; kept in quarantine for operations to resolve. |

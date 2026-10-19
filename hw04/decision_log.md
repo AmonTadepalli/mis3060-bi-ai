@@ -30,6 +30,7 @@ Dimensions: Validity, Completeness, Uniqueness, Consistency, Accuracy/Plausibili
 | D19 | fact_portfolio_snapshot / aum (1,000.00 floor) | flag |
 | D20 | fact_portfolio_snapshot / return_ytd (above 100%) | leave as is |
 | D21 | fact_portfolio_snapshot / snapshot_date (months with no fee) | leave as is |
+| D22 | fact_portfolio_snapshot / aum vs dim_client / initial_aum | leave as is |
 
 **Cleaning order.** Dimensions before facts, so referential checks on the facts run against a final set of keys. Inside each table: type conversions first (a value has to parse before a rule can test it), then quarantines, then value fixes, then flags. D01 runs before D10 so the orphan test uses the de-duplicated client list.
 
@@ -244,3 +245,14 @@ Dimensions: Validity, Completeness, Uniqueness, Consistency, Accuracy/Plausibili
 | **Decision** | leave as is |
 | **Justification** | A fee not billed every month is plausible (waivers, quarterly billing, timing). Nothing points to which rows are missing, and creating fee rows would invent revenue. |
 | **Risk** | If these are lost fee records, fee revenue is understated. Noted as a limitation. |
+
+## D22: First snapshot far from initial AUM
+| Field | Entry |
+|---|---|
+| **Table / column** | fact_portfolio_snapshot / aum vs dim_client / initial_aum |
+| **Evidence** | 4 of 2,500 clients have a first-snapshot AUM more than 50% away from initial_aum. Two joined before 2020, so years of market moves and cash flows separate the two figures (663: $61,221 to $13,992; 1628: $77,475 to $118,182). Two joined in the same month as their first snapshot (1171: $52,612 to $14,174; 1571: $60,662 to $107,200). All four are small Retail accounts. |
+| **Dimension violated** | Consistency (cross-table), possibly |
+| **Decision** | leave as is |
+| **Justification** | initial_aum is a one-time onboarding figure, and AUM can move with deposits and withdrawals in the first weeks. The other 2,496 clients line up, and nothing shows which of the two figures is wrong for these four. Changing either would be a guess. |
+| **Risk** | If initial_aum is wrong for these clients, growth-since-onboarding metrics are off for 4 small accounts. Immaterial to firm totals. |
+

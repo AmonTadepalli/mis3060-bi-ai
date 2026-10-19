@@ -22,7 +22,7 @@ The caveats:
 | Activity after account stopped reporting | fact_transactions | 2,410 | flag | `after_last_snapshot_flag`; all inactive clients |
 | AUM stuck at $1,000.00 | fact_portfolio_snapshot | 420 | flag | `aum_floor_flag`; 92 clients |
 
-Twelve more issues were reviewed and deliberately left as is (see `decision_log.md`). Every changed cell (198,388) is listed in `data/audit/value_changes.csv`.
+Thirteen more issues were reviewed and deliberately left as is (see `decision_log.md`). Every changed cell (198,388) is listed in `data/audit/value_changes.csv`.
 
 **Scorecard, raw to clean** (from `data_quality_scorecard.csv`; all other tables were 100% on every measure in both stages):
 

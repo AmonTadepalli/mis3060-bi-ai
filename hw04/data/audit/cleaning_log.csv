@@ -20,3 +20,4 @@ C09,D19,fact_portfolio_snapshot,"aum at 1,000.00 floor",flag,420,aum_floor_flag 
 --,D18,fact_portfolio_snapshot,scientific notation in returns,leave as is,891,valid numbers
 --,D20,fact_portfolio_snapshot,|return_ytd| > 100%,leave as is,977,internally consistent; IQR flag in Part D
 --,D21,fact_portfolio_snapshot,snapshot month with no fee row,leave as is,7350,no evidence of missing fees
+--,D22,fact_portfolio_snapshot,first snapshot aum >50% away from initial_aum,leave as is,4,onboarding figure vs later balance; no evidence which is wrong
