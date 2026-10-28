@@ -54,3 +54,8 @@ hw04/data/raw/
 !hw04/data/clean/*.csv
 !hw04/data/audit/*.csv
 !hw04/reports/*.csv
+
+# ── HW5 ─────────────────────────────────────────────────
+# Instructor-released clean CSVs stay local; the .pbix and screenshot are deliverables
+hw05/data/
+!hw05/reports/*.csv

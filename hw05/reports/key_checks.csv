@@ -1,0 +1,66 @@
+check,table,column,detail,value,result
+row_count,dim_advisor,,expected 25 x 7,25 x 7,PASS
+row_count,dim_benchmark,,expected 8 x 4,8 x 4,PASS
+row_count,dim_client,,"expected 2,500 x 14","2,500 x 14",PASS
+row_count,dim_date,,"expected 1,827 x 12","1,827 x 12",PASS
+row_count,dim_security,,expected 500 x 8,500 x 8,PASS
+row_count,fact_fees,,"expected 122,197 x 8","122,197 x 8",PASS
+row_count,fact_portfolio_snapshot,,"expected 129,547 x 14","129,547 x 14",PASS
+row_count,fact_transactions,,"expected 298,572 x 10","298,572 x 10",PASS
+pk_not_blank,dim_advisor,advisor_id,no blank primary keys,0,PASS
+pk_unique,dim_advisor,advisor_id,no duplicate primary keys,0,PASS
+pk_not_blank,dim_benchmark,benchmark_id,no blank primary keys,0,PASS
+pk_unique,dim_benchmark,benchmark_id,no duplicate primary keys,0,PASS
+pk_not_blank,dim_client,client_id,no blank primary keys,0,PASS
+pk_unique,dim_client,client_id,no duplicate primary keys,0,PASS
+pk_not_blank,dim_date,date_id,no blank primary keys,0,PASS
+pk_unique,dim_date,date_id,no duplicate primary keys,0,PASS
+pk_not_blank,dim_security,security_id,no blank primary keys,0,PASS
+pk_unique,dim_security,security_id,no duplicate primary keys,0,PASS
+pk_not_blank,fact_fees,fee_id,no blank primary keys,0,PASS
+pk_unique,fact_fees,fee_id,no duplicate primary keys,0,PASS
+pk_not_blank,fact_portfolio_snapshot,snapshot_id,no blank primary keys,0,PASS
+pk_unique,fact_portfolio_snapshot,snapshot_id,no duplicate primary keys,0,PASS
+pk_not_blank,fact_transactions,txn_id,no blank primary keys,0,PASS
+pk_unique,fact_transactions,txn_id,no duplicate primary keys,0,PASS
+fk_integrity,dim_client,advisor_id,advisor_id -> dim_advisor[advisor_id],0,PASS
+fk_blank,dim_client,advisor_id,no blanks allowed,0,PASS
+fk_integrity,dim_security,benchmark_id,benchmark_id -> dim_benchmark[benchmark_id],0,PASS
+fk_blank,dim_security,benchmark_id,no blanks allowed,0,PASS
+fk_integrity,fact_fees,client_id,client_id -> dim_client[client_id],0,PASS
+fk_blank,fact_fees,client_id,no blanks allowed,0,PASS
+fk_integrity,fact_fees,advisor_id,advisor_id -> dim_advisor[advisor_id],0,PASS
+fk_blank,fact_fees,advisor_id,no blanks allowed,0,PASS
+fk_integrity,fact_fees,fee_date,fee_date -> dim_date[date],0,PASS
+fk_blank,fact_fees,fee_date,no blanks allowed,0,PASS
+fk_integrity,fact_portfolio_snapshot,client_id,client_id -> dim_client[client_id],0,PASS
+fk_blank,fact_portfolio_snapshot,client_id,no blanks allowed,0,PASS
+fk_integrity,fact_portfolio_snapshot,advisor_id,advisor_id -> dim_advisor[advisor_id],0,PASS
+fk_blank,fact_portfolio_snapshot,advisor_id,no blanks allowed,0,PASS
+fk_integrity,fact_portfolio_snapshot,benchmark_id,benchmark_id -> dim_benchmark[benchmark_id],0,PASS
+fk_blank,fact_portfolio_snapshot,benchmark_id,no blanks allowed,0,PASS
+fk_integrity,fact_portfolio_snapshot,snapshot_date,snapshot_date -> dim_date[date],0,PASS
+fk_blank,fact_portfolio_snapshot,snapshot_date,no blanks allowed,0,PASS
+fk_integrity,fact_transactions,client_id,client_id -> dim_client[client_id],0,PASS
+fk_blank,fact_transactions,client_id,no blanks allowed,0,PASS
+fk_integrity,fact_transactions,advisor_id,advisor_id -> dim_advisor[advisor_id],0,PASS
+fk_blank,fact_transactions,advisor_id,no blanks allowed,0,PASS
+fk_integrity,fact_transactions,security_id,security_id -> dim_security[security_id],0,PASS
+fk_blank,fact_transactions,security_id,"blanks allowed (counted, not tested)",101528,INFO
+fk_integrity,fact_transactions,txn_date,txn_date -> dim_date[date],0,PASS
+fk_blank,fact_transactions,txn_date,no blanks allowed,0,PASS
+join_column_unique,dim_date,date,"date is unique, so it can be the one side",0,PASS
+date_id_mismatch,fact_fees,fee_date,fact dates match dim_date[date_id] (expect 0),0,PASS
+date_id_mismatch,fact_portfolio_snapshot,snapshot_date,fact dates match dim_date[date_id] (expect 0),0,PASS
+date_id_mismatch,fact_transactions,txn_date,fact dates match dim_date[date_id] (expect 0),0,PASS
+grain_unique,fact_fees,"client_id, fee_date",one row per grain key,0,PASS
+grain_unique,fact_portfolio_snapshot,"client_id, snapshot_date",one row per grain key,0,PASS
+grain_unique,fact_transactions,txn_id,one row per grain key,0,PASS
+monthly_date,fact_fees,fee_date,every date is the 1st of a month,0,PASS
+monthly_date,fact_portfolio_snapshot,snapshot_date,every date is the 1st of a month,0,PASS
+no_natural_key,fact_transactions,"client_id, txn_date, security_id, txn_type","repeats exist, so txn_id is the only grain key",622,INFO
+blank_security_cash_only,fact_transactions,security_id,blank only on Deposit / Withdrawal / Advisory Fee,0,PASS
+cash_rows_have_no_security,fact_transactions,security_id,cash rows never carry a security,0,PASS
+advisor_matches_client,fact_fees,advisor_id,fact advisor_id equals the client's advisor in dim_client,0,PASS
+advisor_matches_client,fact_portfolio_snapshot,advisor_id,fact advisor_id equals the client's advisor in dim_client,0,PASS
+advisor_matches_client,fact_transactions,advisor_id,fact advisor_id equals the client's advisor in dim_client,0,PASS
