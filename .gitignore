@@ -59,3 +59,9 @@ hw04/data/raw/
 # Instructor-released clean CSVs stay local; the .pbix and screenshot are deliverables
 hw05/data/
 !hw05/reports/*.csv
+
+# ── HW6 ─────────────────────────────────────────────────
+# Clean CSVs and the instructor's starting model stay local; hw06.pbix and report CSVs are deliverables
+hw06/data/
+hw06/powerbi/Wildcat_Star_Model.pbix
+!hw06/reports/*.csv

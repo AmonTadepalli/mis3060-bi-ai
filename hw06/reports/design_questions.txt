@@ -1,0 +1,40 @@
+(a) Ending AUM vs SUMX ( VALUES ( dim_client[client_id] ), [Ending AUM] )
+  Ending AUM (one firm-wide last date 2024-12-01): 12,729,572,078.86
+  SUMX over clients (each client's own last date):  13,149,297,713.80
+  Difference: 419,725,634.94 = final balances of 175 clients whose last snapshot is before 2024-12-01 (sum 419,725,634.94)
+  Those clients' last snapshots run from 2022-12-01 to 2023-11-01
+  Clients in dim_client with no snapshot at all: 0
+
+(b) 2024 Fee Yield (bps) vs Effective Fee Rate (bps)
+  Total fees 2024: 48,714,005.93
+  Fee Yield = fees x 12 x 10,000 / sum(snapshot aum)   = 43.1543 bps  (denominator 135,459,843,783.73)
+  Effective Fee Rate = ... / sum(fees aum_basis)       = 45.5323 bps  (denominator 128,385,303,527.10)
+  Snapshot rows 2024: 27,900; with a fee row: 26,216; with NO fee row: 1,684
+  AUM on unbilled client-months: 7,074,540,256.63 (5.22% of 2024 snapshot AUM)
+  aum_basis differs from snapshot aum on matched rows: 0
+  Fee Yield using only billed snapshot rows: 45.5323 bps (= Effective Fee Rate)
+  Unbilled client-months by tier: Retail 1,054, HNW 472, UHNW 158
+  Distinct clients with at least one unbilled 2024 month: 1,082
+  Unbilled snapshot rows by year: 2020 1,139, 2021 1,505, 2022 1,365, 2023 1,657, 2024 1,684
+
+(c) AUM-Weighted Alpha at the last snapshot
+  Rows at 2024-12-01: 2,325; suspect rows: 148
+  Weighted, suspects excluded (the measure): 0.014480
+  Simple mean, same rows (suspects excluded): 0.008788
+  Weighted, suspects INCLUDED:                0.016678
+  Simple mean, suspects included:             0.155624
+  Suspect rows' alpha: min -1.2090, median 0.5356, max 71.3378; their AUM 15,543,506.10
+  Wrong: weighted over ALL 2024 months (YTD values from Jan..Dec mixed): 0.003225
+
+(d) 2024 by tier: organic growth vs AUM YoY
+  Retail AUM 2023-12      447,795,649  2024-12      533,452,498  change     85,656,849  net flows    44,184,048  organic   9.87%  YoY  19.13%  non-flow change     41,472,802
+  HNW    AUM 2023-12    2,130,154,150  2024-12    2,548,521,154  change    418,367,004  net flows    25,227,406  organic   1.18%  YoY  19.64%  non-flow change    393,139,598
+  UHNW   AUM 2023-12    8,067,021,938  2024-12    9,647,598,427  change  1,580,576,489  net flows     8,101,601  organic   0.10%  YoY  19.59%  non-flow change  1,572,474,887
+  Clients at 2023-12: 2325, at 2024-12: 2325, left: 0, joined: 0
+  2024 'Advisory Fee' debits (not in Net Flows): HNW 12,659,310, Retail 2,675,954, UHNW 46,852,159
+
+Part D edge case: Top 10 ranked by each client's own [Ending AUM]
+  Clients in that top 10 with no snapshot on 2024-12-01: 0
+  Share if ranked by own last balance: 0.061589; ranked at last date: 0.061589
+  2022: top-10 by own last balance includes 0 client(s) absent at 2022-12-01; correct share 0.055309, own-balance version 0.055309
+  2023: top-10 by own last balance includes 0 client(s) absent at 2023-12-01; correct share 0.060379, own-balance version 0.060379
